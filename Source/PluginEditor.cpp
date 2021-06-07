@@ -15,7 +15,7 @@ Delay_PluginAudioProcessorEditor::Delay_PluginAudioProcessorEditor (Delay_Plugin
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (600, 300);
     
     float minDelay = 0;
     float maxDelay = 4;
@@ -34,17 +34,32 @@ Delay_PluginAudioProcessorEditor::Delay_PluginAudioProcessorEditor (Delay_Plugin
 }
 
 void Delay_PluginAudioProcessorEditor::initSlider(juce::Slider& slider, juce::Label& label, juce::String text, float min, float max, float step){
-    slider.setSliderStyle (juce::Slider::LinearBarVertical);
-    slider.setRange (min, max, step);
-    slider.setTextBoxStyle (juce::Slider::TextBoxBelow, false, 90, 0);
-    slider.setPopupDisplayEnabled (true, false, this);
-    slider.setTextValueSuffix (" Feedback");
-    slider.setValue((max - min)/2);
     addAndMakeVisible(slider);
+//    slider.setSliderStyle (juce::Slider::LinearBarVertical);
+    slider.setRange (min, max, step);
+//    slider.setTextBoxStyle (juce::Slider::NoTextBox, false, 90, 20);
+//    slider.setPopupDisplayEnabled (true, false, this);
+    slider.setTextValueSuffix (" " + text);
+    slider.setValue((max - min)/2);
+    
+    slider .setTextBoxStyle (juce::Slider::TextBoxLeft, false, 160, slider .getTextBoxHeight());
     
     addAndMakeVisible (label);
     label.setText (text, juce::dontSendNotification);
     label.attachToComponent (&slider, true);
+    
+//    slider.setSliderStyle (juce::Slider::LinearBarVertical);
+//    slider.setRange (min, max, step);
+//    slider.setTextBoxStyle (juce::Slider::NoTextBox, false, 90, 20);
+//    slider.setPopupDisplayEnabled (true, false, this);
+//    slider.setTextValueSuffix (" " + text);
+//    slider.setValue((max - min)/2);
+//    addAndMakeVisible(slider);
+//
+//    addAndMakeVisible (label);
+//    label.setText (text, juce::dontSendNotification);
+//    label.attachToComponent (&slider, true);
+
 }
 
 void Delay_PluginAudioProcessorEditor::sliderValueChanged (juce::Slider* slider)
@@ -70,7 +85,7 @@ Delay_PluginAudioProcessorEditor::~Delay_PluginAudioProcessorEditor()
 void Delay_PluginAudioProcessorEditor::paint (juce::Graphics& g)
 {
     // fill the whole window white
-    g.fillAll (juce::Colours::white);
+    g.fillAll (juce::Colours::grey);
  
     // set the current drawing colour to black
     g.setColour (juce::Colours::black);
@@ -85,12 +100,22 @@ void Delay_PluginAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    feedbackSlider.setBounds (40, 30, 20, getHeight() - 60);
-    rightDelaySlider.setBounds (100, 30, 20, getHeight() - 60);
-    leftDelaySlider.setBounds (160, 30, 20, getHeight() - 60);
-    rightFilterSlider.setBounds (220, 30, 20, getHeight() - 60);
-    leftFilterSlider.setBounds (280, 30, 20, getHeight() - 60);
+//    feedbackSlider.setBounds (40, 30, 20, getHeight() - 60);
+//    rightDelaySlider.setBounds (100, 30, 20, getHeight() - 60);
+//    leftDelaySlider.setBounds (160, 30, 20, getHeight() - 60);
+//    rightFilterSlider.setBounds (220, 30, 20, getHeight() - 60);
+//    leftFilterSlider.setBounds (280, 30, 20, getHeight() - 60);
 
+    // https://docs.juce.com/master/tutorial_slider_values.html
+    auto sliderLeft = 120;
+    feedbackSlider.setBounds (sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
+    rightDelaySlider.setBounds (sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
+    leftDelaySlider.setBounds (sliderLeft, 80, getWidth() - sliderLeft - 10, 20);
+    rightFilterSlider.setBounds (sliderLeft, 110, getWidth() - sliderLeft - 10, 20);
+    leftFilterSlider.setBounds (sliderLeft, 140, getWidth() - sliderLeft - 10, 20);
+//
+//    frequencySlider.setBounds (sliderLeft, 20, getWidth() - sliderLeft - 10, 20);
+//    durationSlider.setBounds (sliderLeft, 50, getWidth() - sliderLeft - 10, 20);
     /*
     40 + 20 = 60
      60 + 40 = 100

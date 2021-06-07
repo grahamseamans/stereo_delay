@@ -125,7 +125,7 @@ void Delay_PluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
         delays[channel].setDelay (sampleRate * 0.5);
         filters[channel] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate,700));
     }
-    delays[right].setDelay(sampleRate * 0.75);
+    delays[right].setDelay(sampleRate * 0.6);
     
     //    change delay to be one channel?
     for (int channel = 0; channel < 2; ++channel){
