@@ -22,28 +22,7 @@ Delay_PluginAudioProcessor::Delay_PluginAudioProcessor()
                   )
 #endif
 {
-    //    dsp::ProcessorChain<dsp::DelayLine<float>,dsp::Panner<float>> chain;
-    //    chain.get<0>() = dsp::DelayLine<float>(10 * 44100);
-    
-    //    auto& delay = processorChain.get<delayIndex>();
-    //    delay = juce::dsp::DelayLine<float>(4 * 44100);
-    //    delay.setDelay (44100 * 0.5);
-    //
-    //    delayLine = juce::dsp::DelayLine<float>(4 * 44100);
-    //    delayLine.setDelay (44100 * 0.5);
-    //
-
-    
-//    filter.setCutoffFrequencyHz (1000.0f);
-//    filter.setResonance (0.7f);
-    //
-    //
-    //    auto& masterGain = processorChain.get<gainIndex>();
-    //    masterGain.setGainLinear (0.5f);
-    //
-    //    auto& filter = processorChain.get<filterIndex>();
-    //    filter.setCutoffFrequencyHz (1000.0f);
-    //    filter.setResonance (0.7f);
+  
 }
 
 Delay_PluginAudioProcessor::~Delay_PluginAudioProcessor()
@@ -121,20 +100,15 @@ void Delay_PluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     // Do I have a memory leek if prepare to play is called more than once?
     
     for (int channel = 0; channel < 2; ++channel){
-        delays[channel] = juce::dsp::DelayLine<float>(4 * sampleRate);
-        delays[channel].setDelay (sampleRate * 0.5);
+        delays[channel] = juce::dsp::DelayLine<float>(maxDelay * sampleRate);
         filters[channel] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate,700));
     }
-    delays[right].setDelay(sampleRate * 0.6);
     
     //    change delay to be one channel?
     for (int channel = 0; channel < 2; ++channel){
         delays[channel].prepare ({ sampleRate, (juce::uint32) samplesPerBlock, 1 });
         filters[channel].prepare({ sampleRate, (juce::uint32) samplesPerBlock, 1 });
     }
-    
-    
-    
 }
 
 void Delay_PluginAudioProcessor::releaseResources()
@@ -171,21 +145,6 @@ bool Delay_PluginAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 
 void Delay_PluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    
-    //    float freq = 500;
-    //    juce::uint32 blockSize = 512;
-    //    juce::dsp::ProcessSpec spec = { sampleRate, blockSize, static_cast<juce::uint32>(readBuffer.getNumChannels()) };
-    //
-    //
-    //    juce::dsp::AudioBlock<float> block(readBuffer);
-    //    juce::dsp::ProcessContextReplacing<float> context(block);
-    //
-    //    juce::dsp::ProcessorDuplicator<juce::dsp::FIR::Filter<float>, juce::dsp::FIR::Coefficients<float>> fir;
-    //    fir.state = juce::dsp::FilterDesign<float>::designFIRLowpassWindowMethod (freq, sampleRate, 21, juce::dsp::WindowingFunction<float>::blackman);
-    //    fir.prepare (spec);
-    //    fir.process (context);
-    
-    
     juce::ScopedNoDenormals noDenormals;
     
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -202,33 +161,6 @@ void Delay_PluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
         }
         filters[channel].snapToZero(); // Does this help??
     }
-    //    const auto numChannels = juce::jmax (totalNumInputChannels, totalNumOutputChannels);
-    //
-    //    auto inoutBlock = juce::dsp::AudioBlock<float> (buffer).getSubsetChannelBlock (0, (size_t) numChannels);
-    //    processorChain.process (juce::dsp::ProcessContextReplacing<float> (inoutBlock));
-    
-    
-    //    // In case we have more outputs than inputs, this code clears any output
-    //    // channels that didn't contain input data, (because these aren't
-    //    // guaranteed to be empty - they may contain garbage).
-    //    // This is here to avoid people getting screaming feedback
-    //    // when they first compile a plugin, but obviously you don't need to keep
-    //    // this code if your algorithm always overwrites all the output channels.
-    //    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-    //        buffer.clear (i, 0, buffer.getNumSamples());
-    //
-    //    // This is the place where you'd normally do the guts of your plugin's
-    //    // audio processing...
-    //    // Make sure to reset the state if your inner loop is processing
-    //    // the samples and the outer loop is handling the channels.
-    //    // Alternatively, you can process the samples with the channels
-    //    // interleaved by keeping the same state.
-    //    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    //    {
-    //        auto* channelData = buffer.getWritePointer (channel);
-    //
-    //        // ..do something to the data...
-    //    }
 }
 
 //==============================================================================
@@ -258,17 +190,37 @@ void Delay_PluginAudioProcessor::setStateInformation (const void* data, int size
 
 
 void Delay_PluginAudioProcessor::setDelayRight(float delay){
-    delays[right].setDelay(getSampleRate() * delay);
+
+    delays[right].setDelay(getSampleRate() * checkDelay(delay));
 }
 void Delay_PluginAudioProcessor::setDelayLeft(float delay){
-    delays[left].setDelay(getSampleRate() * delay);
+    delays[left].setDelay(getSampleRate() * checkDelay(delay));
 }
 void Delay_PluginAudioProcessor::setFilterCutoffRight(float frequency){
-    filters[right] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(),frequency));
+    filters[right] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(),  checkFilter(frequency)));
 }
 void Delay_PluginAudioProcessor::setFilterCutoffLeft(float frequency){
-    filters[left] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(),frequency));
+    filters[left] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), checkFilter(frequency)));
 }
+void Delay_PluginAudioProcessor::setFeedback(float feedback){
+    if (feedback > 1) feedback = 1;
+    else if (feedback < 0) feedback = 0;
+    this->feedback = feedback;
+}
+
+float Delay_PluginAudioProcessor::checkDelay(float delay){
+    if (delay > maxDelay) return maxDelay;
+    else if (delay < 0) return 0;
+    else return delay;
+}
+
+float Delay_PluginAudioProcessor::checkFilter(float cutoff){
+    if (cutoff > maxFilterFreq) return maxFilterFreq;
+    else if (cutoff < 0) return 0;
+    else return cutoff;
+}
+
+
 
 //==============================================================================
 // This creates new instances of the plugin..

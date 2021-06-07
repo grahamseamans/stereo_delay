@@ -53,20 +53,25 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
-    float feedback;
+    void setFeedback(float feedback);
     void setDelayRight(float delay);
     void setDelayLeft(float delay);
     void setFilterCutoffRight(float frequency);
     void setFilterCutoffLeft(float frequency);
 
 private:
-    
+    float feedback;
+    float checkDelay(float delay);
+    float checkFilter(float cutoff);
+
+
     enum
     {
         left,
         right
     };
-    
+    float maxDelay = 4;
+    float maxFilterFreq = 20000;
     // maybe try different interpolation types
     // https://docs.juce.com/master/namespacedsp_1_1DelayLineInterpolationTypes.html
     // https://docs.juce.com/master/classdsp_1_1DelayLine.html
