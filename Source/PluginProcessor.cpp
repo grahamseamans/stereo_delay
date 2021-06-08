@@ -26,7 +26,7 @@ Delay_PluginAudioProcessor::Delay_PluginAudioProcessor()
     rightDelay = checkDelay(0.7);
     leftDelay = checkDelay(rightDelay);
     rightFilter = checkFilter(700);
-    leftFilter = checkFilter(rightFilter); 
+    leftFilter = checkFilter(rightFilter);
 }
 
 Delay_PluginAudioProcessor::~Delay_PluginAudioProcessor()
@@ -110,10 +110,10 @@ void Delay_PluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
         delays[channel].prepare ({ sampleRate, (juce::uint32) samplesPerBlock, 1 });
         filters[channel].prepare({ sampleRate, (juce::uint32) samplesPerBlock, 1 });
     }
-//    
-//    //    change delay to be one channel?
-//    for (int channel = 0; channel < 2; ++channel){
-//    }
+    //
+    //    //    change delay to be one channel?
+    //    for (int channel = 0; channel < 2; ++channel){
+    //    }
 }
 
 void Delay_PluginAudioProcessor::releaseResources()
@@ -185,12 +185,21 @@ void Delay_PluginAudioProcessor::getStateInformation (juce::MemoryBlock& destDat
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+    
+    float dataList[5] = {feedback, rightDelay, leftDelay, rightFilter, leftFilter};
+    destData.insert(dataList, sizeof(float) * 5, 0);
 }
 
 void Delay_PluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+    const float* dataList = reinterpret_cast<const float*>(data);
+    feedback = dataList[0];
+    rightDelay = dataList[1];
+    leftDelay = dataList[2];
+    rightFilter = dataList[3];
+    leftFilter = dataList[4];
 }
 
 
