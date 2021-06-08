@@ -58,26 +58,34 @@ public:
     void setDelayLeft(float delay);
     void setFilterCutoffRight(float frequency);
     void setFilterCutoffLeft(float frequency);
-
-private:
+    
     float feedback;
+    float rightDelay;
+    float leftDelay;
+    float rightFilter;
+    float leftFilter;
+    
+private:
+    
     float checkDelay(float delay);
     float checkFilter(float cutoff);
-
-
+    float checkFeedback(float feedback);
+    
     enum
     {
         left,
         right
     };
-    float maxDelay = 4;
-    float maxFilterFreq = 20000;
+    
+    const float maxDelay = 4;
+    const float maxFilterFreq = 20000;
+    
     // maybe try different interpolation types
     // https://docs.juce.com/master/namespacedsp_1_1DelayLineInterpolationTypes.html
     // https://docs.juce.com/master/classdsp_1_1DelayLine.html
     juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> delays[2];
     juce::dsp::IIR::Filter<float> filters[2];
-
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Delay_PluginAudioProcessor)
 };

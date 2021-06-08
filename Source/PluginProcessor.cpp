@@ -22,7 +22,11 @@ Delay_PluginAudioProcessor::Delay_PluginAudioProcessor()
                   )
 #endif
 {
-  
+    feedback = checkFeedback(0.25);
+    rightDelay = checkDelay(0.7);
+    leftDelay = checkDelay(rightDelay);
+    rightFilter = checkFilter(700);
+    leftFilter = checkFilter(rightFilter); 
 }
 
 Delay_PluginAudioProcessor::~Delay_PluginAudioProcessor()
@@ -101,14 +105,15 @@ void Delay_PluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     
     for (int channel = 0; channel < 2; ++channel){
         delays[channel] = juce::dsp::DelayLine<float>(maxDelay * sampleRate);
-        filters[channel] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate,700));
-    }
-    
-    //    change delay to be one channel?
-    for (int channel = 0; channel < 2; ++channel){
+        delays[channel].setDelay(checkDelay(rightDelay));
+        filters[channel] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate,checkFilter(rightFilter)));
         delays[channel].prepare ({ sampleRate, (juce::uint32) samplesPerBlock, 1 });
         filters[channel].prepare({ sampleRate, (juce::uint32) samplesPerBlock, 1 });
     }
+//    
+//    //    change delay to be one channel?
+//    for (int channel = 0; channel < 2; ++channel){
+//    }
 }
 
 void Delay_PluginAudioProcessor::releaseResources()
@@ -190,21 +195,27 @@ void Delay_PluginAudioProcessor::setStateInformation (const void* data, int size
 
 
 void Delay_PluginAudioProcessor::setDelayRight(float delay){
-
-    delays[right].setDelay(getSampleRate() * checkDelay(delay));
+    delay = checkDelay(delay);
+    rightDelay = delay;
+    delays[right].setDelay(getSampleRate() * delay);
 }
 void Delay_PluginAudioProcessor::setDelayLeft(float delay){
-    delays[left].setDelay(getSampleRate() * checkDelay(delay));
+    delay = checkDelay(delay);
+    leftDelay = delay;
+    delays[left].setDelay(getSampleRate() * delay);
 }
 void Delay_PluginAudioProcessor::setFilterCutoffRight(float frequency){
-    filters[right] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(),  checkFilter(frequency)));
+    frequency = checkFilter(frequency);
+    rightFilter = frequency;
+    filters[right] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(),  frequency));
 }
 void Delay_PluginAudioProcessor::setFilterCutoffLeft(float frequency){
-    filters[left] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), checkFilter(frequency)));
+    frequency = checkFilter(frequency);
+    leftFilter = frequency;
+    filters[left] = juce::dsp::IIR::Filter<float>(juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), frequency));
 }
 void Delay_PluginAudioProcessor::setFeedback(float feedback){
-    if (feedback > 1) feedback = 1;
-    else if (feedback < 0) feedback = 0;
+    feedback = checkFeedback(feedback);
     this->feedback = feedback;
 }
 
@@ -212,6 +223,12 @@ float Delay_PluginAudioProcessor::checkDelay(float delay){
     if (delay > maxDelay) return maxDelay;
     else if (delay < 0) return 0;
     else return delay;
+}
+
+float Delay_PluginAudioProcessor::checkFeedback(float feedback){
+    if (feedback > 1) return 0.99;
+    else if (feedback < 0) return 0;
+    else return feedback;
 }
 
 float Delay_PluginAudioProcessor::checkFilter(float cutoff){

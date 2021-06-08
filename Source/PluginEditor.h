@@ -28,7 +28,7 @@ public:
 
 private:
     void sliderValueChanged (juce::Slider* slider) override;
-    void initSlider(juce::Slider& slider, juce::Label& label, juce::String text, float min, float max, float step);
+    void initSlider(juce::Slider& slider, juce::Label& label, juce::String text, float min, float max, float step, float setValue);
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
