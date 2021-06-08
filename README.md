@@ -4,7 +4,7 @@ Graham Seamans - gseamans@pdx.edu
 
 ### Overview
 
-This is a stereo delay plugin. It has two channels with individual delay buffers and uses IIR LPF's to make a clean warm sound. As it's a Juce plugin it should be able to compine and run in basically any environment, but I have only been able to test it as a standalone plugin on OSX and in Logic Pro.
+This is a stereo delay plugin. It has two channels with individual delay buffers and uses IIR LPF's to make a clean warm sound. As it's a Juce plugin it should be able to compine and run in basically any environment, but I have only been able to test it as a standalone plugin on OSX and in Logic Pro, and little bit in Linux on Bitwig Studio.
 
 ### Building and Running The Project
 
@@ -18,6 +18,10 @@ There is an example of a dry(ish) and wet guitar in the `demoFiles` directory.
 ### Testing
 
 For testing I've been using the plugin as an AudioUnit in Logic Pro, and I lightly tested a VST in Bitwig on Linux. It has been working without any issues for me there.
+
+### License
+
+This project is under the GNU General Public License v2.0. Check the LICENSE file in the root of this repo for more details.
 
 ### Thoughts
 
