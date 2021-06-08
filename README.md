@@ -11,6 +11,9 @@ This is a stereo delay plugin. It has two channels with individual delay buffers
 * For OSX and Windows It seems like it's necissary to install Juce and open the `Delay_Plugin.jucer` file. After this choose which builder you want to use from the menu on the left hand side, click the icon of XCode or VisualStuido in the top middle of the GUI, build in those enviroments, and you're all good to go.
 * For linux I had ProJuicer make a MakeFile, who currently lives in `./LinuxMakeFile/`. In that directory you can see the makefile. make this MakeFile and there should be a build folder in the current directory which contains a VST3 plugin. I'm not sure if there are any dependencies outside of this directory needed to build the file, but It worked first try for me. I do have the Juce library up in this directory, and I'm not sure how legal that is, so I plan to remove that from here very soon.
 
+### Demos
+
+There is an example of a dry(ish) and wet guitar in the `demoFiles` directory.
 
 ### Testing
 
