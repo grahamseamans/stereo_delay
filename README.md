@@ -16,6 +16,10 @@ This is a stereo delay plugin. It has two channels with individual delay buffers
 
 For testing I've been using the plugin as an AudioUnit in Logic Pro, and I lightly tested a VST in Bitwig on Linux. It has been working without any issues for me there.
 
+### License
+
+This project is under the GNU General Public License v2.0. Check the LICENSE file in the root of this repo for more details.
+
 ### Thoughts
 
 I would say that pretty much everything worked. I am a little dissapointed with how the filter movement is really chunky sounding, but it's a convencience feature as I don't remember ever wanting to automate this parameter while making music. I'm actually super satisfied with the result, as it's a very nice sounding stereo delay which was my goal.
